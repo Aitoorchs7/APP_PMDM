@@ -32,24 +32,26 @@ class _Onboardingview extends State<Onboardingview> {
       _iProgress = 100;
     });
 
-    if(FirebaseAuth.instance.currentUser==null){
+    if (FirebaseAuth.instance.currentUser == null) {
       Navigator.popAndPushNamed(context, "/LoginView");
-    }
-    else{
-      String uid=FirebaseAuth.instance.currentUser!.uid;
-      print("EL UID DEL URUSARIO LOGEADO ES: "+uid);
+    } else {
+      String uid = FirebaseAuth.instance.currentUser!.uid;
       final docRef = db.collection("Perfiles").doc(uid);
-      docRef.get().then(
-            (DocumentSnapshot doc) {
-          final data = doc.data() as Map<String, dynamic>;
-          print("EL UID DEL URUSARIO LOGEADO ES: "+data["altura"].toString());
 
+      try {
+        DocumentSnapshot doc = await docRef.get();
+
+        if (doc.exists) {
+          // SI EXISTE: Vamos al Home
           Navigator.popAndPushNamed(context, "/HomeView");
-          // ...
-        },
-        onError: (e) => Navigator.popAndPushNamed(context, "/RegisterView"),
-      );
-
+        } else {
+          // NO EXISTE PERFIL: Vamos al Registro (o Login si prefieres)
+          Navigator.popAndPushNamed(context, "/RegisterView");
+        }
+      } catch (e) {
+        print("Error al obtener perfil: $e");
+        Navigator.popAndPushNamed(context, "/LoginView");
+      }
     }
 
   }

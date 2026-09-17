@@ -3,11 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Homeview extends StatelessWidget{
-  late BuildContext miContext;
 
-  void funClickLogout(){
+  void funClickLogout(BuildContext context){
     FirebaseAuth.instance.signOut();
-    Navigator.popAndPushNamed(miContext, "/LoginView");
+    Navigator.popAndPushNamed(context, "/LoginView");
   }
   @override
   Widget build(BuildContext context) {
@@ -16,7 +15,8 @@ class Homeview extends StatelessWidget{
         mainAxisAlignment: .center,
         children: [
           Text("Homeview"),
-          TextButton(onPressed: funClickLogout, child: Text("Logout"))
+          TextButton(onPressed:()=> funClickLogout(context),
+                     child: Text("Logout"))
         ],
       )
     );
