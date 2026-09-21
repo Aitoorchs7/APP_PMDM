@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'Perfil.dart';
+
 class Onboardingview extends StatefulWidget{
   const Onboardingview({super.key});
 
@@ -36,22 +38,21 @@ class _Onboardingview extends State<Onboardingview> {
       Navigator.popAndPushNamed(context, "/LoginView");
     } else {
       String uid = FirebaseAuth.instance.currentUser!.uid;
-      final docRef = db.collection("Perfiles").doc(uid);
+      final docRef = db.collection("Perfiles").doc(uid).withConverter(
+          fromFirestore: Perfil.fromFirestore,
+          toFirestore: (perfil, _) => perfil.toFirestore(),
+        );
 
-      try {
-        DocumentSnapshot doc = await docRef.get();
+        final docSnap = await docRef.get();
+        Perfil? perfil = docSnap.data();
 
-        if (doc.exists) {
+        if (perfil == null) {
           // SI EXISTE: Vamos al Home
-          Navigator.popAndPushNamed(context, "/HomeView");
+          Navigator.popAndPushNamed(context, "/ProfileView");
         } else {
-          // NO EXISTE PERFIL: Vamos al Registro (o Login si prefieres)
-          Navigator.popAndPushNamed(context, "/RegisterView");
+          // NO EXISTE PERFIL: Vamos al Profileview
+          Navigator.popAndPushNamed(context, "/HomeView");
         }
-      } catch (e) {
-        print("Error al obtener perfil: $e");
-        Navigator.popAndPushNamed(context, "/LoginView");
-      }
     }
 
   }

@@ -1,7 +1,8 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mi_app/Onboardingview.dart';
+import 'package:mi_app/OnboardingView.dart';
+import 'package:mi_app/ProfileView.dart';
 
 import 'HomeView.dart';
 import 'LoginView.dart';
@@ -25,6 +26,7 @@ class Miapp extends StatelessWidget {
         "/HomeView" : (context) =>  Homeview(),
         "/RegisterView" : (context) =>  Registerview(),
         "/Onboardingview" : (context) =>  Onboardingview(),
+        "/ProfileView" : (context) =>  Profileview(),
       },
       initialRoute: "/Onboardingview",
     );
