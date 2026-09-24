@@ -1,36 +1,39 @@
-
-
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import '../fbobject/Perfil.dart';
 
-class Profileview extends StatelessWidget{
+class Profileview extends StatelessWidget {
   TextEditingController nombreController = new TextEditingController();
   TextEditingController edadController = new TextEditingController();
   TextEditingController alturaController = new TextEditingController();
   TextEditingController pesoController = new TextEditingController();
   FirebaseFirestore db = FirebaseFirestore.instance;
 
+  void funConfirmar(BuildContext context) {
+    if (nombreController.text.isNotEmpty && edadController.text.isNotEmpty) {
+      final perfilesCollection = db.collection("Perfiles");
 
-  void funConfirmar(BuildContext context){
-    if(nombreController.text.isNotEmpty && edadController.text.isNotEmpty) {
-      final users = db.collection("Perfiles");
-      final user = <String, dynamic>{
-        "nombre": nombreController.text,
-        "edad": edadController.text,
-        "altura": alturaController.text,
-        "peso": pesoController.text,
-        // se pueden poner mas campos
-      };
-      users.doc(FirebaseAuth.instance.currentUser!.uid).set(user).then((value) {
+      // Usamos .parse() para convertir los textos a sus tipos originales
+      final perfil = new Perfil(
+        uid: FirebaseAuth.instance.currentUser!.uid,
+        nombre: nombreController.text,
+        edad: int.parse(edadController.text),
+        altura: double.parse(alturaController.text),
+        peso: double.parse(pesoController.text),
+      );
+
+      perfilesCollection
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .set(perfil.toFirestore())
+          .then((value) {
         Navigator.popAndPushNamed(context, "/HomeView");
       });
     }
   }
-  void funSalir(){
+
+  void funSalir() {
     exit(0);
   }
 
@@ -75,5 +78,4 @@ class Profileview extends StatelessWidget{
       ),
     );
   }
-
 }

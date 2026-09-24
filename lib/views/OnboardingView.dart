@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'Perfil.dart';
+import '../Dataholder.dart';
+import '../fbobject/Perfil.dart';
 
 class Onboardingview extends StatefulWidget{
   const Onboardingview({super.key});
@@ -40,17 +41,18 @@ class _Onboardingview extends State<Onboardingview> {
       String uid = FirebaseAuth.instance.currentUser!.uid;
       final docRef = db.collection("Perfiles").doc(uid).withConverter(
           fromFirestore: Perfil.fromFirestore,
-          toFirestore: (perfil, _) => perfil.toFirestore(),
+          toFirestore: (Perfil perfil, _) => perfil.toFirestore(),
         );
 
         final docSnap = await docRef.get();
-        Perfil? perfil = docSnap.data();
+        Dataholder.instance.perfilUsuario=docSnap.data()!;
 
-        if (perfil == null) {
+        if(Dataholder.instance.perfilUsuario==null) {
           // SI EXISTE: Vamos al Home
           Navigator.popAndPushNamed(context, "/ProfileView");
         } else {
           // NO EXISTE PERFIL: Vamos al Profileview
+          await Dataholder.instance.perfilUsuario.descargarMensajes();
           Navigator.popAndPushNamed(context, "/HomeView");
         }
     }
